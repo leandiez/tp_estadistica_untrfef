@@ -1,7 +1,8 @@
 import random, math
 import matplotlib.pyplot as plt
 import numpy as np
-
+import auxi
+from scipy.stats import chi2, norm
 #Parte 1: Simulacion
 
 #Devuelve un exito (1) o fracaso (0) dependiendo de la probabilidad de exito p
@@ -28,48 +29,27 @@ def randomNormalDist(paramMu, paramSigma):
     selector = randomBernouli(0.5)
     normal01 = ((math.sqrt(-2 * math.log(random1)) * math.cos(2 * math.pi * random1))*paramSigma)+paramMu
     normal02 = ((math.sqrt(-2 * math.log(random2)) * math.sin(2 * math.pi * random2))*paramSigma)+paramMu
-    if selector > 0.5:
+    if selector:
         return normal01
     return normal02
 
 
-
-#Funciones auxiliares
-
-def obtenerMedia(muestra):
-    suma = 0
-    for i in muestra:
-        suma += i
-    return suma / len(muestra)
-
-def obtenerVarianza(muestra):
-    sumatoria = 0
-    for i in muestra:
-        sumatoria += (i - obtenerMedia(muestra)) ** 2
-    return (1/len(muestra)) * sumatoria
-
-
-def obtenerDesEst(muestra):
-    sumatoria = 0
-    for i in muestra:
-        sumatoria += (i - obtenerMedia(muestra)) ** 2
-    return math.sqrt((1/len(muestra)*(sumatoria)))
 
 # Parte 2: Estadistica descriptiva
 
 def ejercicio22():
     #Generacion de muestras
     muestra1 = [randomExp(0.5) for i in range(10)]
-    print("Media de muestra 1: " + str(obtenerMedia(muestra1)))
-    print("Varianza de muestra 1: "+ str(obtenerVarianza(muestra1)))
+    print("Media de muestra 1: " + str(auxi.obtenerMedia(muestra1)))
+    print("Varianza de muestra 1: "+ str(auxi.obtenerVarianza(muestra1)))
 
     muestra2 = [randomExp(0.5) for i in range(30)]
-    print("Media de muestra 2: " + str(obtenerMedia(muestra2)))
-    print("Varianza de muestra 2: "+ str(obtenerVarianza(muestra2)))
+    print("Media de muestra 2: " + str(auxi.obtenerMedia(muestra2)))
+    print("Varianza de muestra 2: "+ str(auxi.obtenerVarianza(muestra2)))
 
     muestra3 = [randomExp(0.5) for i in range(200)]
-    print("Media de muestra 3: " + str(obtenerMedia(muestra3)))
-    print("Varianza de muestra 3: "+ str(obtenerVarianza(muestra3)))
+    print("Media de muestra 3: " + str(auxi.obtenerMedia(muestra3)))
+    print("Varianza de muestra 3: "+ str(auxi.obtenerVarianza(muestra3)))
 
 
     #Creacion del espacio de graficos y graficos
@@ -120,72 +100,107 @@ def ejercicio32Y33():
     muestra44 = [randomBinomial(100 , 0.4) for i in range(200)]
 
     #Calculo medias y desviaciones estandar muestrales
-    media11 = obtenerMedia(muestra11)
-    desv11 = obtenerDesEst(muestra11)
+    media11 = auxi.obtenerMedia(muestra11)
+    desv11 = auxi.obtenerDesEst(muestra11)
     print("3.2 La media de la muestra 1 binomial es: "+ str(media11))
     print("3.2 La desviacion estandar de la muestra 1 binomial es: "+str(desv11))
 
-    media22 = obtenerMedia(muestra22)
-    desv22 = obtenerDesEst(muestra22)
+    media22 = auxi.obtenerMedia(muestra22)
+    desv22 = auxi.obtenerDesEst(muestra22)
     print("3.2 La media de la muestra 2 binomial es: "+str(media22))
     print("3.2 La desviacion estandar de la muestra 2 binomial es: "+str(desv22))
 
-    media33 = obtenerMedia(muestra33)
-    desv33 = obtenerDesEst(muestra33)
+    media33 = auxi.obtenerMedia(muestra33)
+    desv33 = auxi.obtenerDesEst(muestra33)
     print("3.2 La media de la muestra 3 binomial es: "+str(media33))
     print("3.2 La desviacion estandar de la muestra 3 binomial es: "+str(desv33))
 
-    media44 = obtenerMedia(muestra44)
-    desv44 = obtenerDesEst(muestra44)
+    media44 = auxi.obtenerMedia(muestra44)
+    desv44 = auxi.obtenerDesEst(muestra44)
     print("3.2 La media de la muestra 4 binomial es: "+str(media44))
     print("3.2 La desviacion estandar de la muestra 4 binomial es: "+str(desv44))
 
     #Normalizacion de las muestras
+    #
+    muestra1prima = [((x-media11)/desv11) for x in muestra11]
+    muestra2prima = [((x-media22)/desv22) for x in muestra22]
+    muestra3prima = [((x-media33)/desv33) for x in muestra33]
+    muestra4prima = [((x-media44)/desv44) for x in muestra44]
 
-    muestra1prima = [((i-media11)/desv11) for i in muestra11]
-    muestra2prima = [((i-media22)/desv22) for i in muestra22]
-    muestra3prima = [((i-media33)/desv33) for i in muestra33]
-    muestra4prima = [((i-media44)/desv44) for i in muestra44]
-
-    print("La media de la muestra normalizada 1 es: " + str(obtenerMedia(muestra1prima))) 
-    print("La media de la muestra normalizada 2 es: " + str(obtenerMedia(muestra2prima))) 
-    print("La media de la muestra normalizada 3 es: " + str(obtenerMedia(muestra3prima)))
-    print("La media de la muestra normalizada 4 es: " + str(obtenerMedia(muestra4prima)))
+    print("La media de la muestra normalizada 1 es: " + str(auxi.obtenerMedia(muestra1prima))) 
+    print("La media de la muestra normalizada 2 es: " + str(auxi.obtenerMedia(muestra2prima))) 
+    print("La media de la muestra normalizada 3 es: " + str(auxi.obtenerMedia(muestra3prima)))
+    print("La media de la muestra normalizada 4 es: " + str(auxi.obtenerMedia(muestra4prima)))
 
     fig, axs = plt.subplots(2, 2, sharey=True)
 
-    axs[0][0].hist(muestra1prima, bins="auto")
-    axs[0][1].hist(muestra2prima, bins="auto")
-    axs[1][0].hist(muestra3prima, bins="auto")
-    axs[1][1].hist(muestra4prima, bins="auto")
+    axs[0][0].hist(muestra1prima, bins=[i for i in np.arange(-5,6,0.5)], weights=np.zeros_like(muestra1prima)+1./len(muestra1prima))
+    axs[0][1].hist(muestra2prima, bins=[i for i in np.arange(-5,6,0.5)], weights=np.zeros_like(muestra2prima)+1./len(muestra2prima))
+    axs[1][0].hist(muestra3prima, bins=[i for i in np.arange(-5,6,0.5)], weights=np.zeros_like(muestra3prima)+1./len(muestra3prima))
+    axs[1][1].hist(muestra4prima, bins=[i for i in np.arange(-5,6,0.5)], weights=np.zeros_like(muestra4prima)+1./len(muestra4prima))
+
+    axs[0][0].set_title("Muestra 1 Normalizada")
+    axs[0][1].set_title("Muestra 2 Normalizada")
+    axs[1][0].set_title("Muestra 3 Normalizada")
+    axs[1][1].set_title("Muestra 4 Normalizada")
     plt.show()
 
 
 # Parte 4: Estadistica inferencial
-muestra1 = [randomNormalDist(100,5) for i in range(10)]
-muestra2 = [randomNormalDist(100,5) for i in range(30)]
 
-print(muestra1)
-print(muestra2)
+def ejercicio44():
+    muestra2 = [randomNormalDist(100,math.sqrt(5)) for i in range(30)]
+    #Obtengo mi limite inferior para el intervalo de confianza de la varianza. 
+    #Chi2 se obtiene mediante 1-alfa igual a 0.01 y el grado de libertad n-1
+    valor_critico_chi2 = chi2.ppf(0.01, len(muestra2) - 1)
+    print("Valor de varianza muestra: "+str(auxi.obtenerVarianza(muestra2)))
+    print("Valor calculado de la prueba usando chi-cuadrado:" +str((5/(len(muestra2)-1))*valor_critico_chi2))
 
 ## 4.4 Obtener el limite inferior de varianza usando estimador chi-cuadrado
 ## Calcular el error de tipo 2 con la varianza muestral limite de la hipotesis alternativa
 ## Calcular la probabilidad de que el nuevo chi-cuadrado usando el valor de tabla
 
-""" 
-[8:31, 5/12/2020] Alejandro Araneda UNTREF: Lo único que yo le dije fue
-[8:32, 5/12/2020] Alejandro Araneda UNTREF: Vos tenés un estimador (como pueder el promedio) que se llama Chi cuadrado.
-[8:32, 5/12/2020] Alejandro Araneda UNTREF: Ese Chi cuadrado suponiendo población normal, es (n-1)s^2/sigma^2
-[8:32, 5/12/2020] Alejandro Araneda UNTREF: La distribución de probabilidad de ese estimador es la distribución Chi cuadrado.
-[8:32, 5/12/2020] Alejandro Araneda UNTREF: (Así como el promedio de una muestra de población normal, seguía una distribución normal si sabés sigma, o t de Student si no sabés sigma)
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Despejado, tenés entonces los  límites laterales y el intervalo de confianza.
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Sigma^2 es mayor a X con 1-alfa de confianza si (n-1)s^2/Chi(gl = n-1, p=1-alfa) es mayor a X
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Volviendo a despejar: Sigma^2 es mayor a X con 1-alfa de confianza si s^2 es mayor a X*Chi(gl=n-1, p=1-alfa)/(n-1)
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Esto fue lo que hicimos en el TP
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: El Chi como es una proporción entre s y sigma, cuanto más grande sea, en particular mayor a n-1, significa que s es mayor a sigma.
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: por eso el límite inferior usa 1-alfa (el chi más grande) y el límite inferior es alfa (el Chi más chico)
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Volviendo al test de hipótesis, efectivamente tenes que buscar una s^2 límite que te hubiera  llevado a rechazar la tesis H0.
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: Tenés el Chi (gl=n-1, 1-alfa) lo multiplicas por 5 (sigma de la hipótesis cero) y dividis por n-1 y tenés la s limite que no te hubiera llevado a rechazar sigma>5
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: luego con esa s limite vas al revés con la sigma 6 para hallar el chi y su probabilidad
-[8:33, 5/12/2020] Alejandro Araneda UNTREF: El enlace que él encontró recién lo leí y es muy explicativo. http://www.itchihuahua.edu.mx/academic/industrial/estadistica1/cap03b.html 
-"""
+
+def ejercicio45():
+    muestra2 = [randomNormalDist(100,math.sqrt(5)) for i in range(30)]
+    franjas = np.arange(min(muestra2), max(muestra2), 0.5)
+    frecuencias = [len([x for x in muestra2 if x >= i and x < i + 0.5]) for i in franjas]
+
+    #Genero la frecuencia ideal usando la funcion normal de SciPy
+    def generar_frecuencia_ideal(x):
+        return round((norm.cdf(x + 0.5, loc=100, scale=math.sqrt(5)) - norm.cdf(x, loc=100, scale=math.sqrt(5))) * 30)
+
+    frecuencias_ideales = [generar_frecuencia_ideal(x) for x in franjas]
+    print(frecuencias)
+    print(frecuencias_ideales)
+
+    nuevas_frecuencias = []
+    nuevas_frecuencias_ideales = []
+    acumulado = 0
+    acumulado_ideal = 0
+    for i in range(len(frecuencias)):
+        acumulado += frecuencias[i]
+        acumulado_ideal += frecuencias_ideales[i]
+        if (acumulado >= 5 and acumulado_ideal >= 5):
+            nuevas_frecuencias.append(acumulado)
+            nuevas_frecuencias_ideales.append(acumulado_ideal)
+            acumulado = 0
+            acumulado_ideal = 0
+    print(nuevas_frecuencias)
+    print(nuevas_frecuencias_ideales)
+
+    def calcular_error_cuadratico(frec, nuevas_frec):
+        for i in frec:
+            for j in nuevas_frec:
+                yield (((i-j)**2)/j)
+        return
+
+    error2 = sum(calcular_error_cuadratico(nuevas_frecuencias, nuevas_frecuencias_ideales))
+    print("Error de la prueba de ajuse: "+str(error2))
+    print(("Valor critico de chi2: "))
+    print(chi2.ppf(0.01, len(nuevas_frecuencias_ideales) - 1))
+
+    print("¿El valor del error cuadratico es mayor al de chi-cuadrado con 0.01 de alfa?")
+    print(error2 > chi2.ppf(0.01, len(nuevas_frecuencias_ideales) - 1))
+
+ejercicio45()
